@@ -76,7 +76,7 @@ class Building:
 
 #plane 10x10
 Taken = []
-for i in range(0, 99):
+for i in range(100):
     Taken += [False]
 
 #places builds or Agents in the game
@@ -128,17 +128,13 @@ def update(delay):
     time.sleep(delay)
     os.system("cls")
 
-    #check for colisions O(n2)
-    for e in A:
-        e.pos
-
-
 #boot sequence
 #update(1) #print state on main thread
 #commands(input()) #inputs on seprate thread
 
-for i in range(0, 99):
-    if i:
+for i in range(100):
+    if (i / 10 > 0 and i % 10 == 0): print()
+    if Taken[i]:
         for a in A:
             if (a.pos == i):
                 print(a.tag, end='')
