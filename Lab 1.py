@@ -1,7 +1,7 @@
 import os
 import random
 import time
-import thread
+import threading
 import math
 
 #Final state machine (FSM), Grid
@@ -18,11 +18,16 @@ import math
 
 #Umgås med kompisar.
 
-agentsCount = 0
+A = [] #Agents (Agent A, Agent B, ...)
+B = [] #Places (Job 1, Job 2, MarketPlace)
+
+# find a avalible tile to spawn the entity
+
+# state starting health 10-50
+def getState():
+    return random.randint(10, 50)
 
 class Agent:
-    # state starting health 10-50
-
     # states
     #00 idle        (*--)
     #01 working     (w++)
@@ -37,15 +42,15 @@ class Agent:
 
     #randomly assigned
     def __init__(self, name):
-        self.n = name
-        #self.h = 0
+        self.pos = place()
+        self.tag = name
         
-        self.w = random.randint(10, 50)
-        self.c = random.randint(10, 50)
-        self.s = random.randint(10, 50)
-        self.e = random.randint(10, 50)
-        self.d = random.randint(10, 50)
-        self.f = random.randint(10, 50)
+        self.w = getState()
+        self.c = getState()
+        self.s = getState()
+        self.e = getState()
+        self.d = getState()
+        self.f = getState()
 
     #assigned
 ##    def __init__(self, name, workplace, consumtion, sleep, eat, drink, friends):
@@ -63,18 +68,33 @@ class Agent:
     
     def sleep(cur):
         pass
-        
+
+class Building:
+    def __init__(self, location, _tag):
+        self.pos = location
+        self.tag = _tag
 
 #plane 10x10
+Taken = []
+for i in range(0, 99):
+    Taken += [False]
 
-#market place
-mp = random.randint(0, 99)
+#places builds or Agents in the game
+def place():
+    temp = random.randint(0, 99)
+    while Taken[temp]:
+        temp = random.randint(0, 99)
+    Taken[temp] = True
+    return temp
 
-#house per agent
+#supermarket
+B += [Building(place(), "sm")]
 
 #workplace #1
+B += [Building(place(), "w1")]
 
 #workplace #2
+B += [Building(place(), "w2")]
 
 #Agents
 A += [Agent("A")]
@@ -85,6 +105,13 @@ A += [Agent("C")]
 
 A += [Agent("D")]
 
+#house per agent
+for a in A:
+    temp = random.randint(0, 99)
+    while Taken[temp]:
+        temp = random.randint(0, 99)
+    Taken[temp] = True
+
 #doing +10
 #idle  -1 (for all)
 
@@ -93,3 +120,32 @@ A += [Agent("D")]
 #s [name] - show state health for [name]
 #r [delay] - update game run-delay
 
+#supply agent and places to entity list
+def radius(A, B):
+    pass
+
+def update(delay):
+    time.sleep(delay)
+    os.system("cls")
+
+    #check for colisions O(n2)
+    for e in A:
+        e.pos
+
+
+#boot sequence
+#update(1) #print state on main thread
+#commands(input()) #inputs on seprate thread
+
+for i in range(0, 99):
+    if i:
+        for a in A:
+            if (a.pos == i):
+                print(a.tag, end='')
+                break
+        for b in B:
+            if (b.pos == i):
+                print(b.tag, end='')
+                break
+    else:
+        print(" ", end='')
