@@ -1,4 +1,5 @@
 import os
+import turtle
 import random
 import time
 import threading
@@ -23,9 +24,8 @@ B = [] #Places (Job 1, Job 2, MarketPlace)
 
 # find a avalible tile to spawn the entity
 
-# state starting health 10-50
 def getState():
-    return random.randint(10, 50)
+    return random.randint(50, 70)
 
 class Agent:
     # states
@@ -36,14 +36,14 @@ class Agent:
     #04 hydrating   (h++)
     #05 socializing (s++)
 
-    #legal-multi-state
-    #03+04
-    #
+    #legal-multi-state: None
 
     #randomly assigned
     def __init__(self, name):
-        self.pos = place()
+        self.x = placeX()
+        self.y = placeY()
         self.tag = name
+        self.last = " " #' ' w c s e d f
         
         self.w = getState()
         self.c = getState()
@@ -52,26 +52,17 @@ class Agent:
         self.d = getState()
         self.f = getState()
 
-    #assigned
-##    def __init__(self, name, workplace, consumtion, sleep, eat, drink, friends):
-##        self.n = name
-##        
-##        self.w = workplace
-##        self.c = consumtion
-##        self.s = sleep
-##        self.e = eat
-##        self.d = drink
-##        self.f = friends
-
     def get():
         print(self.w, self.c, self.s, self.e, self.d, self.f, sep='\n')
     
-    def sleep(cur):
+    def activity():
+        last += 6
         pass
 
 class Building:
-    def __init__(self, location, _tag):
-        self.pos = location
+    def __init__(self, _X, _Y, _tag):
+        self.x = place()
+        self.y = place()
         self.tag = _tag
 
 #plane 10x10
@@ -81,36 +72,30 @@ for i in range(100):
 
 #places builds or Agents in the game
 def place():
-    temp = random.randint(0, 99)
-    while Taken[temp]:
-        temp = random.randint(0, 99)
-    Taken[temp] = True
-    return temp
+    temp1 = random.randint(0, 9)
+    temp2 = random.randint(0, 9)
+    while Taken[temp1 + temp2]:
+        temp1 = random.randint(0, 9)
+        temp2 = random.randint(0, 9)
+    Taken[temp1 + temp2] = True
+    return (temp1, temp2)
 
 #supermarket
-B += [Building(place(), "sm")]
+B += [Building(place(),place(), "sm")]
 
 #workplace #1
-B += [Building(place(), "w1")]
+B += [Building(place(),place(), "w1")]
 
 #workplace #2
-B += [Building(place(), "w2")]
+B += [Building(place(),place(), "w2")]
 
 #Agents
-A += [Agent("A")]
-
-A += [Agent("B")]
-
-A += [Agent("C")]
-
-A += [Agent("D")]
+for a in range(ord('a'), ord('e')):
+    A += [Agent(chr(a))]
 
 #house per agent
 for a in A:
-    temp = random.randint(0, 99)
-    while Taken[temp]:
-        temp = random.randint(0, 99)
-    Taken[temp] = True
+    B += [Building(place(), place(), a.tag.upper())]
 
 #doing +10
 #idle  -1 (for all)
@@ -124,6 +109,12 @@ for a in A:
 def radius(A, B):
     pass
 
+def drawBuilding():
+    build = turtle.turtle()
+    global B
+    for b in B:
+        tur.setx(b.x, b.y)
+
 def update(delay):
     time.sleep(delay)
     os.system("cls")
@@ -132,16 +123,19 @@ def update(delay):
 #update(1) #print state on main thread
 #commands(input()) #inputs on seprate thread
 
-for i in range(100):
-    if (i / 10 > 0 and i % 10 == 0): print()
-    if Taken[i]:
-        for a in A:
-            if (a.pos == i):
-                print(a.tag, end='')
-                break
-        for b in B:
-            if (b.pos == i):
-                print(b.tag, end='')
-                break
-    else:
-        print(" ", end='')
+
+tur = turtle.Turtle()
+
+tur.hide()
+tur.begin_fill()
+
+
+tur.lt(90)
+tur.fd(100)
+tur.lt(90)
+tur.fd(100)
+tur.lt(30)
+tur.fd(100)
+tur.lt(30)
+tur.fd(100)
+tur.end_fill()
