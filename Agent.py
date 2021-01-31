@@ -1,32 +1,53 @@
-def getState():
-    return random.randint(6, 99)
+import random
+import turtle
+
+
+def getState(key):
+    rand = random.Random()
+    return [key, rand.randint(6, 99)]
 
 class Agent:
     #working     (w++)
     #consuming   (c++)
-    #socializing (s++)
-    #resting     (r++)
     #eating      (e++)
+    #resting     (r++)
     #hydrating   (h++)
+    #socializing (s++)
 
-    def __init__(self, name, fillColor):
+    def __init__(self, name, color):
+        
+        self.walkspeed = 80
+        self.name = name
         self.tur = turtle.Turtle()
-        self.tur.speed(4)
-        self.tur.fillcolor(fillColor)
-        
-        self.last = " " #' ' w c s e d f
-        
-        self.w = getState()
-        self.c = getState()
-        self.s = getState()
-        self.e = getState()
-        self.d = getState()
-        self.f = getState()
+        self.tur.speed(0)
+        self.tur.pencolor(color)
+        self.tur.fillcolor(color)
 
-    def get():
-        return self.w, self.c, self.s, self.e, self.d, self.f
+        self.worst = ["", 100]
+        self.last = "r" # w c e h r s
 
-    def goto(agent, dest):
-        agent.towards(dest)
-        agent.fd(((agent.tur.xcor() - dest[0])**2 +
-                  (agent.tur.ycor() - dest[1])**2)**0.5)
+        self.states = [getState("w"),
+                       getState("c"),
+                       getState("e"),
+                       getState("h"),
+                       getState("r"),
+
+                       getState("s")]
+
+    #check needs
+    def need(self):
+        for s in self.states:
+            if s[1] < self.worst[1]:
+                self.worst = s
+    
+    def walk(self, dest):
+        self.tur.st()
+        self.tur.lt(self.tur.towards(dest[0], dest[1]) - self.tur.heading())
+        dist = ((self.tur.xcor() - dest[0])**2 +
+                (self.tur.ycor() - dest[1])**2)**0.5
+        #print(dist)
+        if dist > self.walkspeed:
+            self.tur.fd(self.walkspeed) #arrive only if destination is within reach
+        else:
+            self.tur.ht()
+            self.worst[1] += 12 
