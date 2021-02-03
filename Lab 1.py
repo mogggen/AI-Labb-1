@@ -5,7 +5,7 @@ import time
 
 #goal: 0 < state < 100
 
-#doing +6
+#doing +18
 #idle  -1 (for all)
 
 #green supermarket
@@ -15,7 +15,7 @@ import time
 print("Staring...")
 
 #destination
-def rect(x, y, fillcolor):
+def rect(x, y, fillcolor, place):
     size = 50
     tur = turtle.Turtle()
     
@@ -30,66 +30,77 @@ def rect(x, y, fillcolor):
 
     #fill rec
     tur.begin_fill()
-    tur.setx(x + size / 2)
-    tur.sety(y + size / 2)
-    tur.setx(x - size / 2)
-    tur.sety(y - size / 2)
+    if place == "work":
+        tur.setx(x + size)
+        tur.sety(y + size / 2)
+        tur.setx(x - size)
+        tur.sety(y - size / 2)
+    else:
+        tur.setx(x + size / 2)
+        tur.sety(y + size / 2)
+        tur.setx(x - size / 2)
+        tur.sety(y - size / 2)
     tur.end_fill()
+    tur.write(place)
     
     return (x, y)
 
 #destinations
-market = rect(50, 350, "green") #c++ e++
-job = rect(150, 80, "red") #w++
-park = rect(0, 0, "pink") #s++
-work = rect(-200, -70, "blue") #w++
-home = rect(40, -170, "gray") #r++ h++
+market = rect(-50, 300, "green", "market") #c++ e++
+job = rect(150, 80, "red", "job") #w++
+park = rect(0, 0, "pink", "park") #s++
+work = rect(-200, 70, "blue", "work") #w++
+home = rect(40, -170, "gray", "home") #r++ h++
 
 #Agents
 A = [Agent.Agent('A', "green"),
      Agent.Agent('B', "red"),
      Agent.Agent('C', "blue"),
-     Agent.Agent('D', "yellow")]
+     Agent.Agent('D', "turquoise")]
 
 def update():
     for a in A:
         for s in a.states:
             s[1] -= 1
             a.need()
-        if a.worst[0] == 'r' or a.worst[0] == 'h':
+        if a.worst[1] + a.earn >= 100 - a.earn: continue
+        elif a.worst[0] == 'r' or a.worst[0] == 'h':
             a.walk(home)
-        if a.worst[0] == 'c' or a.worst[0] == 'e':
+        elif a.worst[0] == 'c' or a.worst[0] == 'e':
             a.walk(market)
-        if a.worst[0] == 'w':
+        elif a.worst[0] == 'w':
             if ((a.tur.xcor() - job[0])**2 +
                 (a.tur.ycor() - job[1])**2)**0.5 - ((a.tur.xcor() - work[0])**2 +
                 (a.tur.ycor() - work[1])**2)**0.5 < 0:
                 a.walk (job)
             else:
                 a.walk(work)
-        if a.worst[0] == 's':
-            sms(a)
-            a.walk(park)
+        elif a.worst[0] == 's':
+            if (sms(a)):
+                a.walk(park)
 
 def sms(a):
     print(a.name, ": Wanna hangout?")
+    members = 0
     for i in A:
         if i == a: continue
         
         if i.worst[0] == 's':
             print(i.name, ": Sure! see you at the park in a jiffey")
+            members += 1
         else:
-            print("sorry, I can't, I'm ",end='')
+            print(i.name, ": Sorry, I can't, I'm ",end='')
             if i.worst[0] == 'w':
                 print(" working!")
             if i.worst[0] == 'c':
-                print(" heading to the store right now")
+                print(" heading to the store right now.")
             if i.worst[0] == 'e':
-                print("getting something to eat")
+                print("getting something to eat.")
             if i.worst[0] == 'r':
-                print("just gonna rest I think, it's been a long day")
+                print("just gonna rest I think, it's been a long day.")
             if i.worst[0] == 'h':
-                print("thirsty ngl")
+                print("thirsty ngl :D")
+    return members
             
 
 while True:
